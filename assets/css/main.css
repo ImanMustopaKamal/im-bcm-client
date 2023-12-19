@@ -1,0 +1,26 @@
+.brand {
+  height: 64px !important;
+}
+
+.theme--light.v-app-bar.v-toolbar.v-sheet {
+  background-color: #fff !important;
+}
+.theme--light.v-footer {
+  background-color: #fff !important;
+}
+
+.v-list-group__items .v-list-item {
+  padding-left: 40px !important;
+}
+
+.v-main {
+  background: #f4f6f9 !important;
+}
+
+.v-navigation-drawer--mini-variant .brand-logo {
+  height: 30px !important;
+}
+
+.v-breadcrumbs {
+  padding: 10px 10px !important;
+}
