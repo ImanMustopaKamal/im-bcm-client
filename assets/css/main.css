@@ -1,3 +1,9 @@
+html,
+body,
+#_nuxt {
+  overflow-y: hidden !important;
+}
+
 .brand {
   height: 64px !important;
 }
@@ -15,12 +21,45 @@
 
 .v-main {
   background: #f4f6f9 !important;
+  padding: 70px 0px 0px 120px !important;
 }
 
-.v-navigation-drawer--mini-variant .brand-logo {
-  height: 30px !important;
+.v-toolbar.v-app-bar.v-app-bar--fixed {
+  left: 0 !important;
+  height: 70px !important;
+}
+
+.v-navigation-drawer--mini-variant {
+  width: 120px !important;
+  top: 70px !important;
 }
 
 .v-breadcrumbs {
   padding: 10px 10px !important;
+}
+
+.v-list-item::after {
+  content: none !important;
+}
+
+.v-navigation-drawer__content::-webkit-scrollbar {
+  width: 4px;
+}
+
+.v-navigation-drawer__content::-webkit-scrollbar-track {
+  background: #f2f2f2;
+}
+
+.v-navigation-drawer__content::-webkit-scrollbar-thumb {
+  background: #ddd;
+  border-radius: 5px;
+}
+
+@media only screen and (max-width: 768px) {
+  .v-navigation-drawer__content::-webkit-scrollbar {
+    width: 4px;
+  }
+  .v-navigation-drawer__content::-webkit-scrollbar-thumb {
+    background: #ccc;
+  }
 }
