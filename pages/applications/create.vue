@@ -10,7 +10,7 @@
             <v-text-field v-model="name" :counter="225" :rules="nameRules" label="Nama" required></v-text-field>
             <v-select v-model="select" :items="severty" :rules="[v => !!v || 'Severty is required']" label="Severty"
               required></v-select>
-            <v-checkbox v-model="checkbox" label="Aktif"></v-checkbox>
+            <v-checkbox v-model="is_active" label="Aktif"></v-checkbox>
   
             <v-btn :disabled="!valid" color="success" class="mr-4" @click="validate">
               Simpan
@@ -49,11 +49,8 @@ export default {
       v => /.+@.+\..+/.test(v) || 'E-mail must be valid',
     ],
     select: null,
-    severty: [
-      '1',
-      '0',
-    ],
-    checkbox: false,
+    severty: [1, 2, 3, 4, 5],
+    is_active: false,
   }),
 
   methods: {
@@ -65,7 +62,7 @@ export default {
           code: this.code,
           name: this.name,
           severity: Number(this.select),
-          is_active: this.checkbox,
+          is_active: this.is_active,
         })
       }else{
         console.log('error')

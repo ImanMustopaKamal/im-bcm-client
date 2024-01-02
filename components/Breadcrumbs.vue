@@ -3,7 +3,8 @@
     <v-spacer></v-spacer>
     <v-breadcrumbs :items="breadCrumbs">
       <template v-slot:item="{ item }">
-        <v-breadcrumbs-item
+        <v-breadcrumbs-item 
+          router exact link 
           :to="item.href"
           :disabled="item.disabled"
         >
@@ -44,12 +45,12 @@ export default {
             }else{
               crumb.text = name.replace(/-/g, ' ');
             }
+            if(name === ':id') crumb.text = this.$route.params.id;
           }else{
             crumb.text = "Home";
             crumb.href = `/`;
           }
           crumb.disabled = length - 1 === i;
-          crumb.exact = true;
           crumbs.push(crumb)
         })
       });

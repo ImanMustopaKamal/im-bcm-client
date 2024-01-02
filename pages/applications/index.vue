@@ -1,32 +1,40 @@
 <template>
   <div>
-    <v-data-table :headers="headers" :items="items" :options.sync="options" :server-items-length="items.length"
-      :loading="loading" class="elevation-1">
-      <template v-slot:top>
-        <v-toolbar flat>
-          <v-toolbar-title>Data Aplikasi</v-toolbar-title>
-          <!-- <v-divider class="mx-4" inset vertical></v-divider> -->
-          <v-spacer></v-spacer>
-          <v-btn color="primary" dark to="/referensi-aplikasi/create">
-            Tambah Data
-          </v-btn>
-        </v-toolbar>
+    <Search>
+      <template v-slot:my-slot>
+        <v-row align-md="center">
+          <v-col cols="3" md="3">
+            <v-text-field v-model="filter.code" label="Kode"></v-text-field>
+          </v-col>
+          <v-col cols="3" md="3">
+            <v-text-field v-model="filter.name" label="Nama"></v-text-field>
+          </v-col>
+          <v-col cols="3" md="3">
+            <v-checkbox v-model="filter.is_active" label="Aktif"></v-checkbox>
+          </v-col>
+          <v-col cols="3" md="3">
+            <v-btn color="error" @click="reset">
+              Reset
+            </v-btn>
+            <v-btn color="primary" @click="search">
+              Cari
+            </v-btn>
+          </v-col>
+        </v-row>
       </template>
+    </Search>
 
-      <template v-slot:item.actions="{ item }">
-        <v-btn
-          icon
-          color="pink"
-          :to="`/referensi-aplikasi/${item.id}`"
-        >
-          <v-icon small>mdi-pencil</v-icon>
-        </v-btn>
-        <v-icon small>
-          mdi-delete
-        </v-icon>
-      </template>
+    <Table 
+      :headers="headers" 
+      :items="items" 
+      :loading="loading" 
+      :dataLength="dataLength" 
+      @update:options="handleUpdate"
+      @delete:item="handleDelete"
+      :mainroute="'/applications'"
+      title="Data Aplikasi"
+    />
 
-    </v-data-table>
   </div>
 </template>
 
@@ -36,9 +44,26 @@ import { mapActions, mapGetters } from 'vuex'
 export default {
   data() {
     return {
+      filter: {
+        code: '',
+        name: '',
+        is_active: true,
+      },
+      id: null,
+      dialogDelete: false,
       items: [],
       loading: true,
-      options: {},
+      options: {
+        page: 1,
+        itemsPerPage: 10,
+        sortBy: [],
+        sortDesc: [],
+        groupBy: [],
+        groupDesc: [],
+        multiSort: false,
+        mustSort: false,
+      },
+      dataLength: 10,
       headers: [
         {
           text: 'Kode',
@@ -51,7 +76,7 @@ export default {
           sortable: false,
           value: 'name',
         },
-        { text: 'Severty', value: 'severty' },
+        { text: 'Severity', value: 'severity' },
         { text: 'Aktif', value: 'is_active' },
         { text: 'Actions', value: 'actions', sortable: false }
       ],
@@ -59,14 +84,56 @@ export default {
   },
   computed: {
     ...mapGetters({
-      data: 'refApp/getData'
+      data: 'refApp/getData',
+      meta: 'refApp/getMeta',
     })
   },
   mounted() {
-    this.fetchData()
+    this.search()
   },
   methods: {
-    ...mapActions('refApp', ['fetchData'])
+    ...mapActions('refApp', ['fetchData', 'deleteData']),
+    reset() {
+      this.filter = {
+        code: '',
+        name: '',
+        is_active: true,
+      }
+      this.search()
+    },
+    search() {
+      this.loading = true
+      this.fetchData({ 
+        perpage: this.options.itemsPerPage, 
+        page: 1, 
+        name: this.filter.name, 
+        code: this.filter.code, 
+        is_active: this.filter.is_active 
+      })
+    },
+    handleUpdate(options) {
+      this.loading = true
+      this.options = options
+      this.fetchData({ 
+        perpage: options.itemsPerPage, 
+        page: options.page, 
+        name: this.filter.name, 
+        code: this.filter.code,
+        is_active: this.filter.is_active 
+      });
+    },
+    handleDelete(id) {
+      this.deleteData({
+        id: id, 
+        filter: { 
+          perpage: this.options.itemsPerPage, 
+          page: this.options.page, 
+          name: this.filter.name, 
+          code: this.filter.code,
+          is_active: this.filter.is_active 
+        }
+      })
+    },
   },
   watch: {
     data: {
@@ -75,7 +142,13 @@ export default {
         this.loading = false
       },
       deep: true
-    }
+    },
+    meta: {
+      handler: function (val, oldVal) {
+        this.dataLength = val?.data_count ?? 10
+      },
+      deep: true
+    },
   }
 }
 </script>

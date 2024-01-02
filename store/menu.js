@@ -74,10 +74,30 @@ export const state = () => ({
       ],
     },
   ],
+  alert: {
+    show: false,
+    message: "",
+    color: "",
+  }
 });
 
 export const getters = {
   getData(state) {
     return state.data;
   },
+  getAlert(state) {
+    return state.alert;
+  },
+};
+
+export const mutations = {
+  toggleAlert(state, value) {
+    state.alert = value;
+  },
+};
+
+export const actions = {
+  async toggleAlert(context, params) {
+    context.commit("toggleAlert", params);
+  }
 };

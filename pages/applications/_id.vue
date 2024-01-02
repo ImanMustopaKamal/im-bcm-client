@@ -10,7 +10,7 @@
             <v-text-field v-model="name" :counter="225" :rules="nameRules" label="Nama" required></v-text-field>
             <v-select v-model="select" :items="severity" :rules="[v => !!v || 'Severity is required']" label="Severity"
               required></v-select>
-            <v-checkbox v-model="checkbox" label="Aktif"></v-checkbox>
+            <v-checkbox v-model="is_active" label="Aktif"></v-checkbox>
   
             <v-btn :disabled="!valid" color="success" class="mr-4" @click="validate">
               Simpan
@@ -27,10 +27,9 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 
 export default {
-  name: 'EditApplication',
   data: () => ({
     valid: true,
     code: '',
@@ -49,25 +48,30 @@ export default {
       v => /.+@.+\..+/.test(v) || 'E-mail must be valid',
     ],
     select: null,
-    severity: [
-      '1',
-      '0',
-    ],
-    checkbox: false,
+    severity: [1, 2, 3, 4, 5],
+    is_active: false,
   }),
+  computed: {
+    ...mapGetters({
+      data: 'refApp/getData'
+    })
+  },
   mounted() {
     this.fetchDetail({ id: this.$route.params.id })
   },
   methods: {
-    ...mapActions('refApp', ['fetchDetail']),
+    ...mapActions('refApp', ['fetchDetail', 'updateData']),
 
     validate() {
       if(this.$refs.form.validate()) {
-        this.storeData({
-          code: this.code,
-          name: this.name,
-          severity: Number(this.select),
-          is_active: this.checkbox,
+        this.updateData({
+          id: this.$route.params.id,
+          data: {
+            code: this.code,
+            name: this.name,
+            severity: Number(this.select),
+            is_active: this.is_active,
+          }
         })
       }else{
         console.log('error')
@@ -81,5 +85,16 @@ export default {
       this.$refs.form.resetValidation()
     },
   },
+  watch: {
+    data: {
+      handler: function (val, oldVal) {
+        this.code = val.code
+        this.name = val.name
+        this.select = val.severity
+        this.is_active = val.is_active
+      },
+      deep: true
+    }
+  }
 }
 </script>

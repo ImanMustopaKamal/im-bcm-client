@@ -4,13 +4,7 @@
       <v-toolbar-title class="text-h6">Business Continuity Management</v-toolbar-title>
       <v-spacer></v-spacer>
       <v-btn icon>
-        <v-icon>mdi-magnify</v-icon>
-      </v-btn>
-      <v-btn icon>
-        <v-icon>mdi-heart</v-icon>
-      </v-btn>
-      <v-btn icon>
-        <v-icon>mdi-dots-vertical</v-icon>
+        <v-icon>mdi-account</v-icon>
       </v-btn>
     </v-app-bar>
 
@@ -110,6 +104,25 @@
         </v-container>
       </v-sheet>
     </v-main>
+
+    <v-snackbar
+      v-model="snackbarShow"
+      right
+      bottom
+      :color="snackbarColor"
+      timeout="3000"
+    >
+      {{ snackbarMessage }}
+      <template v-slot:action="{ attrs }">
+        <v-btn
+          text
+          v-bind="attrs"
+          @click="snackbar.show = false"
+        >
+          Close
+        </v-btn>
+      </template>
+    </v-snackbar>
   </v-app>
 </template>
 
@@ -124,11 +137,15 @@ export default {
       model: 1,
       offset: true,
       items: [],
+      snackbarShow: false,
+      snackbarMessage: '',
+      snackbarColor: '',
     }
   },
   computed: {
     ...mapGetters({
       data: 'menu/getData',
+      alert: 'menu/getAlert',
     }),
   },
   mounted() {
@@ -138,6 +155,27 @@ export default {
     data: {
       handler: function (val) {
         this.items = val
+      },
+      deep: true,
+    },
+    alert: {
+      handler: function (val) {
+        if(val.show) {
+          this.snackbarShow = val.show
+          this.snackbarMessage = val.message
+          this.snackbarColor = val.color
+        }
+      },
+      deep: true,
+    },
+    snackbar: {
+      handler: function (val) {
+        if(!val.show) {
+          this.snackbarShow = false
+          this.snackbarMessage = ''
+          this.snackbarColor = ''
+          this.toggleAlert({ show: false, message: '', color: '' })
+        }
       },
       deep: true,
     },
