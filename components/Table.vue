@@ -38,7 +38,7 @@
       <v-btn icon color="yellow accent-4" :to="`${mainroute}/${item.id}`">
         <v-icon small>mdi-pencil</v-icon>
       </v-btn>
-      <v-btn icon color="red accent-4" @click="deleteData(item)">
+      <v-btn v-if="item.delete_enable === 1 || item.delete_enable === undefined" icon color="red accent-4" @click="deleteData(item)">
         <v-icon small>mdi-delete</v-icon>
       </v-btn>
     </template>

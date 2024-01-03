@@ -127,11 +127,11 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters, mapState } from 'vuex'
 
 export default {
   name: 'DefaultLayout',
-
+  middleware: 'authenticated',
   data() {
     return {
       model: 1,
@@ -143,6 +143,9 @@ export default {
     }
   },
   computed: {
+    ...mapState({
+      user: (state) => state.auth,
+    }),
     ...mapGetters({
       data: 'menu/getData',
       alert: 'menu/getAlert',
