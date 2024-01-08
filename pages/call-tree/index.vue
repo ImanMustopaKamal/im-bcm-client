@@ -30,6 +30,7 @@
 
 <script>
   export default {
+    layout: 'main',
     data: () => ({
       snackbar: false,
       text: `Hello, I'm a snackbar`,

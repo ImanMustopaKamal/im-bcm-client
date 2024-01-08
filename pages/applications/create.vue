@@ -30,7 +30,7 @@
 import { mapActions } from 'vuex'
 
 export default {
-  name: 'CreateApplication',
+  layout: 'main',
   data: () => ({
     valid: true,
     code: '',

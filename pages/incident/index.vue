@@ -4,25 +4,66 @@
       <template #my-slot>
         <v-row align-md="center">
           <v-col cols="3" md="3">
-            <v-text-field v-model="filter.name" label="Nama"></v-text-field>
+            <v-text-field outlined dense v-model="filter.threat" label="Jenis Bencana"></v-text-field>
           </v-col>
           <v-col cols="3" md="3">
             <v-select 
-              v-model="filter.type" 
-              :items="type" 
+              outlined
+              dense
+              v-model="filter.location" 
+              :items="units" 
               item-text="name" 
               item-value="id"
               persistent-hint
-              return-object
               single-line
-              label="Type"
+              label="Lokasi Bencana"
             >
             </v-select>
           </v-col>
-          <v-col cols="3" md="3">
-            <v-checkbox v-model="filter.is_active" label="Aktif"></v-checkbox>
+        </v-row>
+        <div>
+          <v-subheader>Tanggal Kejadian</v-subheader>
+          <v-row>
+            <v-col cols="3" md="3">
+              <DatePicker label="Tanggal Awal" modelValue="from" required @update:date="updateDate" />
+            </v-col>
+            <v-col cols="3" md="3">
+              <DatePicker label="Tanggal Akhir" modelValue="to" required @update:date="updateDate" />
+            </v-col>
+          </v-row>
+        </div>
+        <v-row align="baseline">
+          <v-col cols="12" md="12">
+            <v-radio-group
+              v-model="filter.status"
+              row
+            >
+              <v-radio
+                label="Draft"
+                :value="1"
+              ></v-radio>
+              <v-radio
+                label="Proses Persetujuan"
+                :value="2"
+              ></v-radio>
+              <v-radio
+                label="Proses Persetujuan Lanjutan"
+                :value="3"
+              ></v-radio>
+              <v-radio
+                label="Disetujui"
+                :value="4"
+              ></v-radio>
+              <v-radio
+                label="Ditolak"
+                :value="5"
+              ></v-radio>
+              <v-radio
+                label="Semua"
+                :value="0"
+              ></v-radio>
+            </v-radio-group>
           </v-col>
-
           <v-col cols="3" md="3">
             <v-btn color="error" @click="reset">
               Reset
@@ -31,7 +72,6 @@
               Cari
             </v-btn>
           </v-col>
-
         </v-row>
       </template>
     </Search>
@@ -45,6 +85,9 @@
       @delete:item="handleDelete"
       :mainroute="'/incident'"
       title="Data Kejadian Bencana"
+      :showSelect="true"
+      :hideEditButton="true"
+      :hideDeleteButton="true"
     />
   </div>
 </template>
@@ -53,30 +96,33 @@
 import { mapGetters, mapActions } from 'vuex'
 
 export default {
+  layout: 'main',
   data: () => ({
     filter: {
-      name: '',
-      type: null,
-      is_active: true,
+      status: 1,
+      threat: '',
+      location: null,
+      from: null,
+      to: null,
     },
     headers: [
       {
         text: 'Jenis Bencana',
         align: 'start',
         sortable: false,
-        value: 'name',
+        value: 'combine_threat',
       },
       {
         text: 'Tanggal Bencana',
         align: 'start',
         sortable: false,
-        value: 'name',
+        value: 'disaster_date',
       },
       {
         text: 'Lokasi Bencana',
         align: 'start',
         sortable: false,
-        value: 'name',
+        value: 'disaster_location_name',
       },
       {
         text: 'Unit Pencatatan',
@@ -88,12 +134,12 @@ export default {
         text: 'Status',
         align: 'center',
         sortable: false,
-        value: 'is_active',
+        value: 'wf_status_id',
       },
-      { text: 'Aktif', value: 'is_active', sortable: false },
-      { text: 'Actions', value: 'actions', sortable: false }
+      { text: 'Actions', align: 'center', value: 'actions', sortable: false }
     ],
     type: [],
+    units: [],
     items: [],
     options: {
       page: 1,
@@ -110,52 +156,64 @@ export default {
   }),
   computed: {
     ...mapGetters({
-      data: 'refThreat/getData',
-      types: 'refThreat/getTypes',
+      data: 'incident/getData',
+      organization: 'organizations/getData',
     })
   },
-  mounted() {
-    this.fetchTypes();
-    this.search()
+  async mounted () {
+    await this.fetchOrganization()
+    await this.search()
   },
   methods: {
-    ...mapActions('refThreat', ['fetchData', 'fetchTypes']),
+    ...mapActions({
+      fetchData: 'incident/fetchData',
+      deleteData: 'incident/deleteData',
+      fetchOrganization: 'organizations/fetchData',
+    }),
     handleUpdate(options) {
       this.loading = true
       this.options = options
-      this.fetchData({ perpage: options.itemsPerPage, page: options.page, name: this.filter.name, type_id: this.filter.type, is_active: this.filter.is_active })
+      this.fetchData({
+        ...this.filter,
+        perpage: options.itemsPerPage, 
+        page: options.page,
+      })
     },
     handleDelete(id) {
-      this.$store.dispatch('refThreat/deleteData', {
+      this.deleteData({
         id: id, 
         filter: { 
+          ...this.filter,
           perpage: this.options.itemsPerPage, 
-          page: this.options.page, 
-          name: this.filter.name, 
-          type_id: this.filter.type, 
-          is_active: this.filter.is_active 
+          page: this.options.page,
         }
       })
     },
     reset() {
       this.filter = {
-        name: '',
-        type: null,
-        is_active: true,
+        status: 1,
+        threat: '',
+        location: null,
+        from: null,
+        to: null,
       }
       this.search()
     },
     search() {
       this.loading = true
       this.fetchData({ 
+        ...this.filter,
         perpage: this.options.itemsPerPage, 
         page: 1, 
-        name: this.filter.name, 
-        type_id: this.filter.type, 
-        is_active: 
-        this.filter.is_active
       })
     },
+    updateDate(date, params) {
+      if(params === 'from') {
+        this.filter.from = date
+      } else {
+        this.filter.to = date
+      }
+    }
   },
   watch: {
     data: {
@@ -165,11 +223,12 @@ export default {
       },
       deep: true
     },
-    types: {
-      handler: function (val, oldVal) {
-        this.type = val
+    organization: {
+      handler: function (val) {
+        if(val.error) return
+        this.units = val.data.data
       },
-      deep: true
+      deep: true,
     },
   }
 }

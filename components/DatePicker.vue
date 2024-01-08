@@ -7,10 +7,10 @@
     width="290px"
   >
     <template v-slot:activator="{ on, attrs }">
+      <!-- prepend-icon="mdi-calendar"  -->
       <v-text-field 
         v-model="date" 
         :label="label" 
-        prepend-icon="mdi-calendar" 
         readonly 
         v-bind="attrs"
         v-on="on"
@@ -41,17 +41,21 @@ export default {
       type: Boolean,
       default: false,
     },
+    modelValue: {
+      type: String,
+      default: null,
+    },
   },
   data() {
     return {
       modal: false,
-      date: new Date().toISOString().substr(0, 10),
+      date: null,
     }
   },
   watch: {
     date(val) {
-      console.log("🚀 ~ file: DatePicker.vue:41 ~ date ~ al:", val)
-      // this.$emit('input', val)
+      const date = new Date(val).toISOString();
+      this.$emit('update:date', date, this.modelValue)
     },
   },
 }

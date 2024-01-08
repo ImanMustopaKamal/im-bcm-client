@@ -1,45 +1,13 @@
-html,
-body,
-#_nuxt {
-  overflow-y: hidden !important;
+.v-application .light-blue.darken-9 {
+  background-color: #417489 !important;
+  border-color: #417489 !important;
 }
 
-.brand {
-  height: 64px !important;
+.theme--dark.v-icon {
+  color: #d9d9d9 !important;
 }
-
-.theme--light.v-app-bar.v-toolbar.v-sheet {
-  background-color: #fff !important;
-}
-.theme--light.v-footer {
-  background-color: #fff !important;
-}
-
-.v-list-group__items .v-list-item {
-  padding-left: 40px !important;
-}
-
-.v-main {
-  background: #f4f6f9 !important;
-  padding: 70px 0px 0px 120px !important;
-}
-
-.v-toolbar.v-app-bar.v-app-bar--fixed {
-  left: 0 !important;
-  height: 70px !important;
-}
-
-.v-navigation-drawer--mini-variant {
-  width: 120px !important;
-  top: 70px !important;
-}
-
-.v-breadcrumbs {
-  padding: 10px 10px !important;
-}
-
-.v-list-item::after {
-  content: none !important;
+.theme--dark.v-list-item {
+  color: #d9d9d9 !important;
 }
 
 .v-navigation-drawer__content::-webkit-scrollbar {

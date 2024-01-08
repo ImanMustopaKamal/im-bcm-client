@@ -95,7 +95,6 @@ export const actions = {
 
   async fetchTypes(context, params) {
     const { meta, data } = await this.$axios.$get("threat_types", { params });
-    console.log("🚀 ~ file: refThreat.js:98 ~ fetchTypes ~ meta, data:", meta, data)
 
     context.commit("fetchType", data);
     context.commit("fetchMeta", meta);

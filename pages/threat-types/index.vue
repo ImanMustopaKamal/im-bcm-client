@@ -45,6 +45,7 @@
 import { mapActions, mapGetters } from 'vuex'
 
 export default {
+  layout: 'main',
   data() {
     return {
       filter: {

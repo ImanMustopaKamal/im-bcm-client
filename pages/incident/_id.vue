@@ -12,25 +12,39 @@
                   cols="6"
                   md="6"
                 >
-                  <DatePicker label="Tanggal Kejadian" required @update:date="updateDate" />
+                  <DatePicker label="Tanggal Kejadian" required />
                 </v-col>
                 <v-col
                   cols="6"
                   md="6"
                 >
                   <v-autocomplete
-                    v-model="disaster.disaster_location"
+                    v-model="model"
                     :items="units"
                     outlined
                     clearable
                     hide-no-data
                     hide-selected
-                    required
-                    :rules="[v => !!v || 'Lokasi Kejadian is required']"
                     label="Lokasi Kejadian"
                     item-text="name"
                     item-value="id"
+                    return-object
                   ></v-autocomplete>
+                  <!-- <v-autocomplete
+                    v-model="model"
+                    :items="items"
+                    :loading="isLoading"
+                    :search-input.sync="search"
+                    outlined
+                    clearable
+                    hide-no-data
+                    hide-selected
+                    label="Lokasi Kejadian"
+                    item-text="name"
+                    item-value="id"
+                    return-object
+                    @click:clear="clear()"
+                  ></v-autocomplete> -->
                 </v-col>
               </v-row>
             </div>
@@ -48,9 +62,7 @@
                     :items="threat_types" 
                     item-text="name" 
                     item-value="id"
-                    :rules="[v => !!v || 'Ancaman Lv 1 is required']" 
-                    required 
-                    label="Ancaman Lv 1" 
+                    :rules="[v => !!v || 'Ancaman Lv 1 is required']" required label="Ancaman Lv 1" 
                     persistent-hint
                     return-object
                     single-line
@@ -62,14 +74,13 @@
                 >
                   <v-select 
                     outlined
-                    v-model="disaster.threat_id" 
+                    v-model="threat" 
                     :items="threats" 
                     item-text="name" 
                     item-value="id"
-                    :rules="[v => !!v || 'Ancaman Lv 2 is required']"
-                    required
-                    label="Ancaman Lv 2" 
+                    :rules="[v => !!v || 'Ancaman Lv 2 is required']" required label="Ancaman Lv 2" 
                     persistent-hint
+                    return-object
                     single-line
                   ></v-select>
                 </v-col>
@@ -84,11 +95,10 @@
                 >
                   <v-textarea
                     outlined
+                    :v-model="description"
                     name="description"
                     label="Deskripsi"
-                    :rules="[v => !!v || 'Deskripsi is required']"
-                    v-model="disaster.disaster_chronology"
-                    required
+                    value=""
                     rows="3"
                   ></v-textarea>
                 </v-col>
@@ -97,21 +107,20 @@
 
             <div>
               <v-subheader>Kondisi Pegawai dan Keluarga</v-subheader>
-              <v-row align="baseline" v-for="(items, i) in disaster_staff" :key="i">
+              <v-row align="baseline" v-for="(items, i) in cField" :key="i">
                 <v-col
                   cols="3"
                   md="3"
                 >
                   <v-select 
                     outlined
-                    v-model="items.staff_condition_id" 
+                    v-model="items.condition" 
                     :items="conditions" 
                     item-text="name" 
                     item-value="id"
-                    :rules="[v => !!v || 'Kondisi Pegawai is required']"
-                    required
-                    label="Kondisi Pegawai" 
+                    :rules="[v => !!v || 'Kondisi is required']" required label="Kondisi" 
                     persistent-hint
+                    return-object
                     single-line
                   ></v-select>
                 </v-col>
@@ -121,14 +130,10 @@
                 >
                   <v-text-field 
                     type="number"
-                    step="any"
-                    min="0"
-                    ref="input"
-                    v-model.number="items.total"
                     outlined
                     label="Jumlah Pegawai"
-                    :value="items.total"
-                    :rules="[v => !!v || 'Jumlah Pegawai is required']"
+                    v-model="items.num_employees" 
+                    :value="items.num_employees"
                     required
                   ></v-text-field>
                 </v-col>
@@ -139,9 +144,8 @@
                   <v-text-field 
                     outlined
                     label="Nama Pegawai"
-                    v-model="items.name" 
-                    :value="items.name"
-                    :rules="[v => !!v || 'Nama Pegawai is required']"
+                    v-model="items.employee_name" 
+                    :value="items.employee_name"
                     required
                   ></v-text-field>
                 </v-col>
@@ -153,12 +157,8 @@
                     type="number"
                     outlined
                     label="Jumlah Keluarga"
-                    step="any"
-                    min="0"
-                    ref="input"
-                    v-model.number="items.total_family"
-                    :value="items.total_family"
-                    :rules="[v => !!v || 'Jumlah Keluarga is required']"
+                    v-model="items.num_families" 
+                    :value="items.num_families"
                     required
                   ></v-text-field>
                 </v-col>
@@ -173,7 +173,7 @@
                     dark
                     small
                     color="primary"
-                    @click="disaster_staff.push({ staff_condition_id: null, total: null, name: null, total_family: null, })"
+                    @click="cField.push({ condition: null, num_employees: null, employee_name: null, num_families: null })"
                   >
                     <v-icon dark>
                       mdi-plus
@@ -186,7 +186,7 @@
                     dark
                     small
                     color="primary"
-                    @click="disaster_staff.splice(i, 1)"
+                    @click="cField.splice(i, 1)"
                   >
                     <v-icon dark>
                       mdi-delete
@@ -197,24 +197,39 @@
             </div>
 
             <div>
+              <v-row>
+                <v-col
+                  cols="7"
+                  md="7"
+                >
+                  <v-text-field
+                    outlined
+                    label="Total Unit"
+                    readonly
+                    :value="directlyAffected.length"
+                  ></v-text-field>
+                </v-col>
+              </v-row>
+            </div>
+
+            <div>
               <v-subheader>Unit Terdampak Langsung</v-subheader>
-              <v-row align="baseline" v-for="(items, i) in disaster_direct_unit" :key="i">
+              <v-row align="baseline" v-for="(items, i) in directlyAffected" :key="i">
                 <v-col
                   cols="5"
                   md="5"
                 >
                   <v-autocomplete
-                    v-model="items.location_org_id"
+                    v-model="items.unit"
                     :items="units"
                     outlined
-                    :rules="[v => !!v || 'Unit is required']"
-                    required
                     clearable
                     hide-no-data
                     hide-selected
                     label="Unit"
                     item-text="name"
                     item-value="id"
+                    return-object
                   ></v-autocomplete>
                 </v-col>
                 <v-col
@@ -222,7 +237,7 @@
                   md="5"
                 >
                   <v-radio-group
-                    v-model="items.is_operating"
+                    v-model="items.unitStatus"
                     row
                   >
                     <v-radio
@@ -246,7 +261,7 @@
                     dark
                     small
                     color="primary"
-                    @click="disaster_direct_unit.push({ location_org_id: null, is_operating: true })"
+                    @click="directlyAffected.push({ unit: null, unitStatus: true })"
                   >
                     <v-icon dark>
                       mdi-plus
@@ -259,7 +274,79 @@
                     dark
                     small
                     color="primary"
-                    @click="disaster_direct_unit.splice(i, 1)"
+                    @click="directlyAffected.splice(i, 1)"
+                  >
+                    <v-icon dark>
+                      mdi-delete
+                    </v-icon>
+                  </v-btn>
+                </v-col>
+              </v-row>
+            </div>
+
+            <div>
+              <v-subheader>Unit Terdampak Tidak Langsung</v-subheader>
+              <v-row align="baseline" v-for="(items, i) in arntDirectlyAffected" :key="i">
+                <v-col
+                  cols="5"
+                  md="5"
+                >
+                  <v-select 
+                    outlined
+                    v-model="items.segment" 
+                    :items="indirect_unit" 
+                    item-text="name" 
+                    item-value="id"
+                    :rules="[v => !!v || 'Unit is required']" 
+                    required 
+                    label="Segmen / Lainnya" 
+                    persistent-hint
+                    return-object
+                    single-line>
+                  </v-select>
+                </v-col>
+                <v-col
+                  cols="5"
+                  md="5"
+                >
+                  <v-autocomplete
+                    v-model="items.unit"
+                    :items="units"
+                    outlined
+                    clearable
+                    hide-no-data
+                    hide-selected
+                    label="Unit"
+                    item-text="name"
+                    item-value="id"
+                    return-object
+                  ></v-autocomplete>
+                </v-col>
+                <v-col
+                  cols="2"
+                  md="2"
+                >
+                  <v-btn
+                    v-if="i === 0"
+                    class="mx-2"
+                    fab
+                    dark
+                    small
+                    color="primary"
+                    @click="directlyAffected.push({ unit: null, unitStatus: true })"
+                  >
+                    <v-icon dark>
+                      mdi-plus
+                    </v-icon>
+                  </v-btn>
+                  <v-btn
+                    v-else
+                    class="mx-2"
+                    fab
+                    dark
+                    small
+                    color="primary"
+                    @click="directlyAffected.splice(i, 1)"
                   >
                     <v-icon dark>
                       mdi-delete
@@ -280,22 +367,49 @@
                     <div class="currencyfield">
                       <v-select 
                         outlined
-                        v-model="disaster.estimated_lost_currency" 
+                        v-model="ELCurrency" 
                         :items="currency" 
                         item-text="name" 
                         item-value="code"
                         persistent-hint
+                        return-object
                         single-line
                       ></v-select>
                     </div>
                     <v-text-field
                       outlined
-                      step="any"
-                      min="0"
-                      ref="input"
-                      v-model.number="disaster.estimated_lost"
-                      :rules="[v => !!v || 'Nominal is required']"
-                      required
+                      v-model="ELNominal"
+                      type="number"
+                      label="Nominal"
+                    ></v-text-field>
+                  </div>
+                </v-col>
+              </v-row>
+            </div>
+
+            <div>
+              <v-subheader>Jumlah Klaim Asuransi Aset</v-subheader>
+              <v-row>
+                <v-col
+                  cols="7"
+                  md="7"
+                >
+                  <div style="display: inline-flex; gap: 5px; width: 100%;">
+                    <div class="currencyfield">
+                      <v-select 
+                        outlined
+                        v-model="ICCurrency" 
+                        :items="currency" 
+                        item-text="name" 
+                        item-value="code"
+                        persistent-hint
+                        return-object
+                        single-line
+                      ></v-select>
+                    </div>
+                    <v-text-field
+                      outlined
+                      v-model="ICNominal"
                       type="number"
                       label="Nominal"
                     ></v-text-field>
@@ -312,9 +426,10 @@
                 >
                   <v-textarea
                     outlined
+                    :v-model="recoveryPlan"
                     name="recoveryPlan"
                     label="Rencana Pemulihan Pasca Bencana"
-                    v-model="disaster.recovery_plan"
+                    value=""
                     rows="3"
                   ></v-textarea>
                 </v-col>
@@ -329,14 +444,49 @@
                 >
                   <v-textarea
                     outlined
+                    :v-model="temporaryMeasures"
                     name="temporaryMeasures"
                     label="Tindakan Sementara yang Telah Dilakukan"
-                    v-model="disaster.temp_action_plan"
+                    value=""
                     rows="3"
                   ></v-textarea>
                 </v-col>
               </v-row>
             </div>
+
+            <div>
+              <v-subheader>Alternatif Pemenuhan Layanan</v-subheader>
+              <v-row>
+                <v-col
+                cols="6"
+                md="6"
+                >
+                  <v-textarea
+                    outlined
+                    :v-model="operational"
+                    name="operational"
+                    label="Operasional dan Layanan"
+                    value=""
+                    rows="3"
+                  ></v-textarea>
+                </v-col>
+                <v-col
+                cols="6"
+                md="6"
+                >
+                  <v-textarea
+                    outlined
+                    :v-model="sdm"
+                    name="sdm"
+                    label="SDM"
+                    value=""
+                    rows="3"
+                  ></v-textarea>
+                </v-col>
+              </v-row>
+            </div>
+
+            <!-- <v-checkbox v-model="is_active" label="Aktif"></v-checkbox> -->
 
             <v-btn :disabled="!valid" color="success" class="mr-4" @click="validate">
               Simpan
@@ -352,41 +502,63 @@
 </template>
 
 <script>
+import DatePicker from '../../components/DatePicker.vue';
 import { mapActions, mapGetters } from 'vuex'
 
 export default {
   layout: 'main',
+  components: { DatePicker },
   data: () => ({
+    entries: [],
+    isLoading: false,
+    model: null,
+    search: null,
     valid: true,
-    conditions: [],
-    threat_types: [],
     threat_type: null,
+    threat_types: [],
+    threat: null,
     threats: [],
+    description: '',
+    conditions: [],
+    unitStatus: true,
     units: [],
-    currency: [],
-    disaster: {
-      org_id: null,
-      threat_id: null,
-      disaster_chronology: '',
-      disaster_date: new Date().toISOString(),
-      disaster_location: null,
-      estimated_lost_currency: '360',
-      estimated_lost: null,
-      temp_action_plan: '',
-      recovery_plan: '',
-    },
-    disaster_staff: [{
-      staff_condition_id: null,
-      total: null,
-      name: null,
-      total_family: null,
+    directlyAffected: [{
+      unit: null,
+      unitStatus: true,
     }],
-    disaster_direct_unit : [
-      {
-        location_org_id : null,
-        is_operating : true
-      }
+    indirect_unit: [],
+    arntDirectlyAffected: [{
+      unit: null,
+      segment: null,
+    }],
+    currency: [],
+    ELCurrency: {
+      name: 'IDR',
+      code:'360',
+    },
+    ELNominal: null,
+    ICCurrency: {
+      name: 'IDR',
+      code:'360',
+    },
+    ICNominal: null,
+    recoveryPlan: '',
+    temporaryMeasures: '',
+    operational: '',
+    sdm: '',
+
+
+    location: '',
+    locationRules: [
+      v => !!v || 'Lokasi Kejadian is required',
     ],
+    is_active: false,
+    cField: [{
+      condition: null,
+      num_employees: null,
+      employee_name: null,
+      num_families: null,
+    }],
   }),
   mounted() {
     this.fetchTypes()
@@ -404,6 +576,11 @@ export default {
       indirectUnit: 'reference/getIndirectUnit',
       reffCurrency: 'reference/getReffCurrency'
     }),
+    items () {
+      return this.entries.map(entry => {
+        return Object.assign({}, entry, { name: entry.name })
+      })
+    },
   },
   methods: {
     ...mapActions({
@@ -413,19 +590,14 @@ export default {
       fetchStafCondition: 'reference/fetchStafCondition',
       fetchIndirectUnit: 'reference/fetchIndirectUnit',
       fetchReffCurrency: 'reference/fetchReffCurrency',
-      doCreate: 'incident/storeData',
     }),
+    clear() {
+      this.model = null
+      this.entries = []
+    },
     validate() {
       if (this.$refs.form.validate()) {
-        this.disaster.org_id = this.disaster.disaster_location
-        const data = {
-          disaster: this.disaster,
-          disaster_staff: this.disaster_staff,
-          disaster_direct_unit: this.disaster_direct_unit,
-        }
-        console.log("🚀 ~ file: create.vue:427 ~ validate ~ data:", data)
-        
-        this.doCreate(data)
+        console.log('success');
       }
       else {
         console.log('error');
@@ -437,22 +609,23 @@ export default {
     resetValidation() {
       this.$refs.form.resetValidation();
     },
-    updateDate(val) {
-      this.disaster.disaster_date = val
-    },
   },
   watch: {
     organization: {
       handler: function (val) {
         if(val.error) return
         this.units = val.data.data
+        // this.isLoading = false
+        // this.clear()
+        // this.entries = val.data.data
+        // this.count = val.dataCount
       },
       deep: true,
     },
     threatTypes: {
       handler: function (val, oldVal) {
         this.threats = []
-        this.disaster.threat_id = null
+        this.threat = null
         this.threat_types = val
       },
       deep: true
@@ -486,7 +659,21 @@ export default {
         this.currency = val
       },
       deep: true
-    },  
+    },
+
+    
+    search (val) {
+      if (val === null) return
+      if (val.length < 3) {
+        this.clear()
+        return
+      }
+      if (this.items.length > 0) return
+      if (this.isLoading) return
+      this.isLoading = true
+      this.fetchData({ name: val })
+    },
+        
   }
 }
 </script>
