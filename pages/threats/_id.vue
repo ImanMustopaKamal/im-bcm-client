@@ -31,7 +31,7 @@
 import { mapActions, mapGetters } from 'vuex'
 
 export default {
-  name: 'EditApplication',
+  layout: 'main',
   data: () => ({
     valid: true,
     name: '',

@@ -60,6 +60,7 @@
 import { mapGetters, mapActions } from 'vuex'
 
 export default {
+  layout: 'main',
   data: () => ({
     filter: {
       name: '',
