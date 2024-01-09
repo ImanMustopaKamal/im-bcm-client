@@ -1,31 +1,31 @@
 export const state = () => ({
   data: [
     {
-      icon: "mdi-apps",
+      icon: "mdi-view-dashboard",
       title: "Dashboard",
       to: "/",
       sub: null,
     },
     {
-      icon: "mdi-apps",
+      icon: "mdi-car-emergency",
       title: "Data Kejadian Bencana",
       to: "/incident",
       sub: null,
     },
     {
-      icon: "mdi-apps",
+      icon: "mdi-view-agenda",
       title: "Monitoring Kejadian Bencana",
       to: "/observe-incident",
       sub: null,
     },
     {
-      icon: "mdi-apps",
+      icon: "mdi-phone-classic",
       title: "Call Tree",
       to: "/call-tree",
       sub: null,
     },
     {
-      icon: "mdi-apps",
+      icon: "mdi-text-box-check",
       title: "Pengkinian Dokumen",
       to: "/doc-updating",
       sub: null,
@@ -37,19 +37,19 @@ export const state = () => ({
       sub: null,
     },
     {
-      icon: "mdi-apps",
+      icon: "mdi-check-decagram",
       title: "Persetujuan Pengujian Aplikasi",
       to: "/approval-app-testing",
       sub: null,
     },
     {
-      icon: "mdi-apps",
+      icon: "mdi-check-decagram",
       title: "Persetujuan Data Kejadian Bencana",
       to: "/approval-incident",
       sub: null,
     },
     {
-      icon: "mdi-apps",
+      icon: "mdi-book",
       title: "Referensi",
       to: null,
       sub: [
@@ -67,8 +67,20 @@ export const state = () => ({
         },
         {
           icon: "mdi-chart-bubble",
-          title: "Ancaman",
+          title: "Ancaman Lv 1",
+          to: "/threat-types",
+          value: false,
+        },
+        {
+          icon: "mdi-chart-bubble",
+          title: "Ancaman Lv 2",
           to: "/threats",
+          value: false,
+        },
+        {
+          icon: "mdi-chart-bubble",
+          title: "Struktur Organisasi",
+          to: "/organization-structure",
           value: false,
         },
       ],

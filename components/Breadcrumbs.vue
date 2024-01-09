@@ -45,12 +45,15 @@ export default {
             }else{
               crumb.text = name.replace(/-/g, ' ');
             }
+            
             if(name === ':id') crumb.text = this.$route.params.id;
+            if(name === ':id?') crumb.text = this.$route.params.id;
           }else{
             crumb.text = "Home";
             crumb.href = `/`;
           }
           crumb.disabled = length - 1 === i;
+          if(name === 'detail') crumb.disabled = true;
           crumbs.push(crumb)
         })
       });

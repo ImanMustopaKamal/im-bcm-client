@@ -86,8 +86,12 @@ export const actions = {
   },
 
   async fetchDetail(context, params) {
-    const { data } = await this.$axios.$get("disaster/" + params.id);
-
-    context.commit("fetchData", data);
+    try {
+      const { data, meta } = await this.$axios.$get("disaster/" + params.id);
+      if(meta?.code !== 200) return;
+      context.commit("fetchData", data);
+    } catch (error) {
+      context.commit("fetchData", []);
+    }
   },
 };

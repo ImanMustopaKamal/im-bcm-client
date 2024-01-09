@@ -46,10 +46,33 @@
     </v-app-bar>
 
     <v-main>
-      <v-container>
-        <Nuxt />
-      </v-container>
+      <v-sheet id="scrolling-techniques-7" class="overflow-y-auto" max-height="600"
+        style="background-color: transparent;">
+        <v-container>
+          <Breadcrumbs />
+          <Nuxt class="mx-auto py-6"/>
+        </v-container>
+      </v-sheet>
     </v-main>
+
+    <v-snackbar
+      v-model="snackbarShow"
+      right
+      bottom
+      :color="snackbarColor"
+      timeout="3000"
+    >
+      {{ snackbarMessage }}
+      <template v-slot:action="{ attrs }">
+        <v-btn
+          text
+          v-bind="attrs"
+          @click="snackbar.show = false"
+        >
+          Close
+        </v-btn>
+      </template>
+    </v-snackbar>
   </v-app>
 </template>
 

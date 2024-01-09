@@ -11,10 +11,10 @@
       <v-text-field 
         v-model="date" 
         :label="label" 
-        readonly 
         v-bind="attrs"
         v-on="on"
         outlined
+        :disabled="disabled"
         :required="required"
       ></v-text-field>
     </template>
@@ -45,6 +45,14 @@ export default {
       type: String,
       default: null,
     },
+    disabled: {
+      type: Boolean,
+      default: false,
+    },
+    defaultDate: {
+      type: String,
+      default: new Date().toISOString(),
+    },
   },
   data() {
     return {
@@ -56,6 +64,11 @@ export default {
     date(val) {
       const date = new Date(val).toISOString();
       this.$emit('update:date', date, this.modelValue)
+    },
+    defaultDate: {
+      handler: function (val) {
+        this.date = val;
+      },
     },
   },
 }

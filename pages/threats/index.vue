@@ -1,12 +1,5 @@
 <template>
   <div>
-    <v-btn
-      text
-      color="primary"
-      to="/threat-types"
-    >
-      Lv 1
-    </v-btn>
     <Search>
       <template v-slot:my-slot>
         <v-row align-md="center">

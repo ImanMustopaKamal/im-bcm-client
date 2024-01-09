@@ -1,3 +1,9 @@
+html,
+body,
+#_nuxt {
+  overflow-y: hidden !important;
+}
+
 .v-application .light-blue.darken-9 {
   background-color: #417489 !important;
   border-color: #417489 !important;
