@@ -23,6 +23,26 @@
         <v-btn v-if="selected.length > 0" class="mr-3" color="primary" dark :to="`${mainroute}/create`">
           Proses Data
         </v-btn>
+        <a :href="`${baseUrl}${mainroute}/download`" download>
+          <v-btn v-if="mainroute === '/call-tree'" class="mr-3" color="green darken-1" dark>
+            Download
+            <v-icon
+              right
+              color="white"
+            >
+              mdi-file-delimited
+            </v-icon>
+          </v-btn>
+        </a>
+        <v-btn v-if="mainroute === '/call-tree'" class="mr-3" color="light-blue darken-1" dark @click="handleImport">
+          Import
+          <v-icon
+            right
+            color="white"
+          >
+            mdi-file-import
+          </v-icon>
+        </v-btn>
         <v-btn v-if="!hideAddButton" color="primary" dark :to="`${mainroute}/create`">
           Tambah Data
         </v-btn>
@@ -114,6 +134,7 @@
       dataOptions: {},
       dialogDelete: false,
       selected: [],
+      baseUrl: process.env.baseUrl
     }),
     methods: {
       moment: function (date) {
@@ -129,6 +150,12 @@
       deleteItemConfirm() {
         this.dialogDelete = false
         this.$emit("delete:item", this.id)
+      },
+      handleDownload() {
+        this.$emit("handle:download")
+      },
+      handleImport() {
+        this.$emit("handle:import")
       },
     },
     watch: {
