@@ -224,8 +224,8 @@ export default {
   watch: {
     data: {
       handler: function (val) {
-        this.items = val.data
-        this.dataLength = val.meta.data_count
+        this.items = val?.data?? []
+        this.dataLength = val?.meta?.data_count ?? 10
         this.loading = false
       },
       deep: true,

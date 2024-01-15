@@ -1,5 +1,8 @@
 # im-bcm-client
 
+# NODE VERSION
+v18.19.0
+
 ## Build Setup
 
 ```bash

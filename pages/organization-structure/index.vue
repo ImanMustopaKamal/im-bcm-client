@@ -143,8 +143,8 @@
     watch: {
       data: {
         handler: function (val, oldVal) {
-          this.items = val.data
-          this.dataLength = val.meta.data_count
+          this.items = val?.data ?? []
+          this.dataLength = val?.meta?.data_count ?? 10
           this.loading = false
         },
         deep: true

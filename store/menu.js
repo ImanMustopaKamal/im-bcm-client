@@ -83,6 +83,18 @@ export const state = () => ({
           to: "/organization-structure",
           value: false,
         },
+        {
+          icon: "mdi-chart-bubble",
+          title: "Workflow Module",
+          to: "/workflow-module",
+          value: false,
+        },
+        {
+          icon: "mdi-chart-bubble",
+          title: "Workflow Level",
+          to: "/workflow-level",
+          value: false,
+        },
       ],
     },
   ],
