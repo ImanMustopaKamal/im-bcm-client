@@ -18,24 +18,27 @@ export const state = () => {
   };
 };
 export const mutations = {
-  setAuth(state, auth, error) {
+  setAuth(state, auth) {
     state.auth = auth;
   },
 };
 export const actions = {
   async nuxtServerInit({ commit, dispatch }, { req, redirect }) {
-    let idToken = "";
-    let accessToken = "";
-    let refreshToken = "";
-    if (req.headers.cookie) {
-      idToken = getCookies(req.headers.cookie, "IdToken");
-      accessToken = getCookies(req.headers.cookie, "AccessToken");
-      refreshToken = getCookies(req.headers.cookie, "RefreshToken");
-    } else {
-      idToken = token.AuthenticationResult.IdToken;
-      accessToken = token.AuthenticationResult.AccessToken;
-      refreshToken = token.AuthenticationResult.RefreshToken;
-    }
+    // let idToken = "";
+    // let accessToken = "";
+    // let refreshToken = "";
+    const idToken = getCookies(req.headers.cookie, "IdToken");
+    const accessToken = getCookies(req.headers.cookie, "AccessToken");
+    const refreshToken = getCookies(req.headers.cookie, "RefreshToken");
+    // if (req.headers.cookie) {
+    //   idToken = getCookies(req.headers.cookie, "IdToken");
+    //   accessToken = getCookies(req.headers.cookie, "AccessToken");
+    //   refreshToken = getCookies(req.headers.cookie, "RefreshToken");
+    // } else {
+    //   idToken = token.AuthenticationResult.IdToken;
+    //   accessToken = token.AuthenticationResult.AccessToken;
+    //   refreshToken = token.AuthenticationResult.RefreshToken;
+    // }
     try {
       if (accessToken) {
         try {
@@ -71,18 +74,20 @@ export const actions = {
                 item.url.indexOf(process.env.APP_URL) !== -1 &&
                 item.is_registered === true
             );
-            //   if(ref_url.length === 0){
-            //     redirect("/404")
-            //   }
+              if(ref_url.length === 0){
+                redirect("/unauthorized")
+              }
           } else {
-            redirect("/404");
+            redirect("/unauthorized");
           }
         } catch (error) {
           commit("setAuth", null, error);
         }
+      }else{
+        commit('setAuth', null)
       }
     } catch (error) {
-      commit("setAuth", null, error);
+      commit("setAuth", null);
     }
   },
 };

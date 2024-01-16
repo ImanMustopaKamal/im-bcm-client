@@ -16,6 +16,28 @@
     <template #item.disaster_date="{ item }">
       {{ moment(item.disaster_date).format("DD MMM YYYY") }}
     </template>
+    <template #item.is_app_enabled="{ item }">
+      <v-switch
+        :input-value="item.is_app_enabled === 'true' ? true : false"
+        v-on:change="handleSwitch(item, $event)"
+        inset
+      ></v-switch>
+    </template>
+    <template #item.role_id="{ item }">
+      <v-select 
+        :value="item.role_id" 
+        :items="roles" 
+        item-text="name" 
+        item-value="id"
+        persistent-hint
+        single-line
+        outlined
+        hide-details
+        dense
+        placeholder="Select Role"
+        v-on:change="handleChange(item, $event)"
+      ></v-select>
+    </template>
     <template v-slot:top>
       <v-toolbar flat>
         <v-toolbar-title>{{ title }}</v-toolbar-title>
@@ -128,6 +150,10 @@
         type: Boolean,
         default: false
       },
+      roles: {
+        type: Array,
+        default: () => []
+      }
     },
     data: () => ({
       id: null,
@@ -157,6 +183,12 @@
       handleImport() {
         this.$emit("handle:import")
       },
+      handleSwitch(item, event) {
+        this.$emit("handle:switch", item, event)
+      },
+      handleChange(item, event) {
+        this.$emit("handle:change", item, event)
+      }
     },
     watch: {
       dataOptions: {

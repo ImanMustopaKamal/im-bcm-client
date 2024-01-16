@@ -7,6 +7,12 @@ export const state = () => ({
       sub: null,
     },
     {
+      icon: "mdi-account",
+      title: "User",
+      to: "/users",
+      sub: null,
+    },
+    {
       icon: "mdi-car-emergency",
       title: "Data Kejadian Bencana",
       to: "/incident",

@@ -43,6 +43,7 @@
       <v-btn icon>
         <v-icon>mdi-account</v-icon>
       </v-btn>
+      <p class="mb-0">HI, {{ this.$store?.state?.auth?.name ?? 'noname' }}</p>
     </v-app-bar>
 
     <v-main>
