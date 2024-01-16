@@ -39,7 +39,7 @@ export default {
   ],
 
   // Modules: https://go.nuxtjs.dev/config-modules
-  modules: ["@nuxtjs/dotenv", "@nuxtjs/axios"],
+  modules: ["@nuxtjs/dotenv", "@nuxtjs/axios", "cookie-universal-nuxt"],
 
   axios: {
     baseURL: process.env.BASE_URL || "http://localhost:3000",

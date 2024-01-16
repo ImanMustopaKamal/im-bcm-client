@@ -34,6 +34,7 @@
         outlined
         hide-details
         dense
+        clearable
         placeholder="Select Role"
         v-on:change="handleChange(item, $event)"
       ></v-select>

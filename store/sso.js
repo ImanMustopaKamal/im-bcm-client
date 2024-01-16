@@ -51,4 +51,26 @@ export const actions = {
       }
     }
   },
+  async logout({ commit, rootState }) {
+    await this.$axios(formatBaseUrl("/auth/logout"), {
+      method: "post",
+      headers: {
+        "APP-CLIENT-ID": ssoAppClientId,
+        "Access-Control-Allow-Origin": domainOrigin,
+        Accept: "application/json",
+        Content: "application/json",
+        Authorization: rootState.auth.access_token,
+      },
+    })
+      .then((res) => {
+        commit("setAuth", null, { root: true });
+        this.$cookies.removeAll();
+        window.location.href = `${process.env.SSO_APP}/login?ref=${process.env.APP_URL}`;
+      })
+      .catch((err) => {
+        commit("setAuth", null, { root: true });
+        this.$cookies.removeAll();
+        window.location.href = `${process.env.SSO_APP}/login?ref=${process.env.APP_URL}`;
+      });
+  },
 };

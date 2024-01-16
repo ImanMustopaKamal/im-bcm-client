@@ -106,7 +106,6 @@ export default {
     },
     dataRoles: {
       handler: function(val) {
-        console.log("val: ", val)
         this.roles = val?.data ?? []
       },
     }

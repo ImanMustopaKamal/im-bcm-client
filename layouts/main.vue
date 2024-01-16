@@ -40,10 +40,35 @@
       <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
       <v-toolbar-title class="text-h6">Business Continuity Management</v-toolbar-title>
       <v-spacer></v-spacer>
-      <v-btn icon>
-        <v-icon>mdi-account</v-icon>
-      </v-btn>
-      <p class="mb-0">HI, {{ this.$store?.state?.auth?.name ?? 'noname' }}</p>
+      <v-menu offset-y>
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn
+            icon
+            v-bind="attrs"
+            v-on="on"
+          >
+            <v-icon>mdi-account</v-icon>
+          </v-btn>
+        </template>
+        <v-list>
+          <v-list-item>
+            <v-list-item-title>HI, {{ this.$store?.state?.auth?.name ?? 'noname' }}</v-list-item-title>
+          </v-list-item>
+          <v-divider></v-divider>
+          <v-list-item>
+            <v-list-item-title>
+              <v-btn
+                color="error"
+                left
+                text
+                @click="logout"
+              >
+                Logout
+              </v-btn>
+            </v-list-item-title>
+          </v-list-item>
+        </v-list>
+      </v-menu>
     </v-app-bar>
 
     <v-main>
@@ -61,14 +86,14 @@
       right
       bottom
       :color="snackbarColor"
-      timeout="3000"
+      timeout="2000"
     >
       {{ snackbarMessage }}
       <template v-slot:action="{ attrs }">
         <v-btn
           text
           v-bind="attrs"
-          @click="snackbar.show = false"
+          @click="snackbarShow = false"
         >
           Close
         </v-btn>
@@ -78,7 +103,7 @@
 </template>
 
 <script>
-import { mapGetters, mapState } from 'vuex'
+import { mapGetters, mapState, mapActions } from 'vuex'
 
 export default {
   name: 'MainLayout',
@@ -111,6 +136,11 @@ export default {
   },
   mounted() {
     this.items = this.data
+  },
+  methods: {
+    ...mapActions({
+      logout: 'sso/logout',
+    }),
   },
   watch: {
     data: {
